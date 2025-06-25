@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuki的图书馆</title>
+    
+    <link rel="icon" href="data:,">
+    
+    <meta http-equiv="Content-Security-Policy" content="
+    script-src 'self' 'unsafe-inline' blob: https://cdn.jsdelivr.net;
+    style-src 'self' 'unsafe-inline' blob: https://fonts.googleapis.com;
+    font-src 'self' blob: data: *; 
+    img-src 'self' data: blob: *;
+    connect-src 'self' data: blob: *;
+    worker-src 'self' blob:;
+    frame-src 'self' blob:;
+    style-src-attr 'self' 'unsafe-inline';
+    ">
+
+    <link rel="stylesheet" href="style.css">
+    <script src="jszip.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <nav class="navigation-sidebar">
+            <header>
+                <h1>yuki的图书馆</h1>
+            </header>
+            <ul class="nav-menu">
+                <li id="nav-bookshelf" class="nav-item">
+                    <span class="nav-item-main">书架 (全部)</span>
+                    <ul id="lists-submenu" class="sub-menu">
+                        <li id="create-list-btn" class="create-list-item">+ 新建列表</li>
+                    </ul>
+                </li>
+                <li id="nav-music" class="nav-item musicbtn">音乐</li>
+            </ul>
+            <footer class="sidebar-footer">
+            </footer>
+        </nav>
+        
+        <main class="main-content">
+            <div class="view-container">
+                <div id="bookshelf-view" class="view">
+                    <!-- ======================================================= -->
+                    <!-- 【已恢复】这就是被意外移除的书架搜索框 -->
+                    <!-- ======================================================= -->
+                    <div class="bookshelf-controls">
+                        <input type="text" id="search-bar" placeholder="搜索书名...">
+                    </div>
+                    <div id="bookshelf" class="bookshelf"></div>
+                    <button id="clear-all-books-btn" class="clear-btn">清空书库</button>
+                </div>
+                
+                <div id="reader-view" class="view hidden">
+                    <div id="custom-background" class="custom-background"></div>
+
+                    <div id="toc-panel" class="toc-panel">
+                        <div class="toc-header">
+                            <h3>目录</h3>
+                            <button id="toc-close-btn" class="panel-close-btn">×</button>
+                        </div>
+                        <div class="toc-search-wrapper">
+                            <input type="text" id="toc-search-input" placeholder="筛选章节或按Enter搜索内容...">
+                        </div>
+                        <div id="toc-list" class="toc-list"></div>
+                        <!-- 【新增】这是新的内容搜索结果容器 -->
+                        <div id="toc-search-results-container" class="hidden">
+                            <div class="toc-search-header">
+                                <button id="toc-back-to-nav-btn" class="toolbar-btn">← 返回目录</button>
+                            </div>
+                            <div id="toc-searching-indicator" class="hidden">正在搜索全书...</div>
+                            <ul id="toc-search-results-list"></ul>
+                        </div>
+                    </div>
+
+                    <div class="reader-toolbar">
+                        <div class="toolbar-group">
+                            <button id="toc-open-btn" class="toolbar-btn">☰ 目录</button>
+                            <button id="back-to-shelf-btn" class="toolbar-btn">返回书架</button>
+                            <button id="analyze-text-btn" class="toolbar-btn">📊 词频分析</button>
+                            <button id="coke-btn" class="toolbar-btn">🥤 来瓶可乐</button>
+                        </div>
+                        <div id="theme-toggle-btn" class="theme-container" title="切换主题">
+                            <div class="components">
+                                <div class="main-button">
+                                    <div class="moon"></div><div class="moon"></div><div class="moon"></div>
+                                </div>
+                                <div class="daytime-backgrond"></div><div class="daytime-backgrond"></div><div class="daytime-backgrond"></div>
+                                <div class="cloud">
+                                    <div class="cloud-son"></div><div class="cloud-son"></div><div class="cloud-son"></div>
+                                    <div class="cloud-son"></div><div class="cloud-son"></div><div class="cloud-son"></div>
+                                </div>
+                                <div class="cloud-light">
+                                    <div class="cloud-son"></div><div class="cloud-son"></div><div class="cloud-son"></div>
+                                    <div class="cloud-son"></div><div class="cloud-son"></div><div class="cloud-son"></div>
+                                </div>
+                                <div class="stars">
+                                    <div class="star big"><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div></div>
+                                    <div class="star big"><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div></div>
+                                    <div class="star medium"><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div></div>
+                                    <div class="star medium"><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div></div>
+                                    <div class="star small"><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div></div>
+                                    <div class="star small"><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="font-controls">
+                            <span>字体大小:</span>
+                            <button id="font-size-decrease">-</button>
+                            <button id="font-size-increase">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="reader-area">
+                        <div id="viewer"></div>
+                        <button id="prev" class="arrow"><</button>
+                        <button id="next" class="arrow">></button>
+                        
+                        <div id="info-panel" class="info-panel yuki-panel">
+                            <div id="info-chapter" class="info-item">
+                                <span class="info-label">CHAPTER:</span>
+                                <span class="info-value">--</span>
+                            </div>
+                            <div id="info-chapter-progress" class="info-item">
+                                <span class="info-label">IN-CHAPTER:</span>
+                                <span class="info-value">--%</span>
+                            </div>
+                            <div id="info-progress" class="info-item">
+                                <span class="info-label">IN-BOOK:</span>
+                                <span class="info-value">--%</span>
+                            </div>
+                            <div id="info-pagination" class="info-item">
+                                <span class="info-label">PAGINATION:</span>
+                                <span class="info-value">-- / --</span>
+                            </div>
+                            <div id="info-time-left" class="info-item">
+                                <span class="info-label">TIME-LEFT:</span>
+                                <span class="info-value">-- min</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="reader-footer-controls">
+                        <div class="background-controls">
+                            <label for="bg-upload-input" class="bg-control-btn">更换背景</label>
+                            <input type="file" id="bg-upload-input" accept="image/*" hidden>
+                            <label for="bg-opacity-slider" class="bg-opacity-label">透明度:</label>
+                            <input type="range" id="bg-opacity-slider" min="0" max="1" step="0.05" value="0.3">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="log-console" class="yuki-panel hidden">
+        <div class="panel-header">SYSTEM.LOG</div>
+        <div id="log-content" class="panel-content"></div>
+    </div>
+    
+    <div id="word-frequency-panel" class="yuki-panel hidden">
+        <div class="panel-header">
+            <span>WORD.FREQUENCY.ANALYSIS</span>
+            <button class="panel-close-btn">×</button>
+        </div>
+        <div id="word-frequency-content" class="panel-content"></div>
+    </div>
+    
+    <input type="file" id="book-upload" accept=".epub,.pdf" hidden multiple>
+    <div id="loading-indicator" class="hidden">正在加载书籍...</div>
+    
+    <div id="music-player" class="music-player hidden">
+        <div class="music-header">
+            <span>音乐</span>
+            <button class="close-btn">×</button> 
+        </div>
+        <div class="music-body">
+            <p id="song-title">歌曲名</p>
+            <div class="music-controls">
+                <button id="add-music-btn" title="添加本地音乐">+</button>
+                <button id="prev-song-btn">⏮</button>
+                <button id="play-pause-btn">▶️</button>
+                <button id="next-song-btn">⏭</button>
+                <button id="playlist-btn" title="播放列表">🎵</button>
+            </div>
+        </div>
+        <audio id="audio-element"></audio> 
+        <input type="file" id="music-upload" accept=".mp3,.flac,.wav,.m4a" hidden multiple>
+    </div>
+
+    <div id="command-palette" class="hidden">
+        <div class="palette-container">
+            <div class="palette-input-wrapper">
+                <input type="text" id="palette-input" placeholder="输入命令或搜索...">
+            </div>
+            <ul id="palette-results"></ul>
+        </div>
+    </div>
+    
+    <button id="john-smith-trigger" title="Change the world line">☆</button>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
