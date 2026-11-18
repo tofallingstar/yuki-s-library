@@ -62,6 +62,7 @@ class App {
         document.dispatchEvent(new CustomEvent('log-event', { detail: { message: `Changing view to: ${viewName}`, type: 'system' } }));
 
         // 根据视图名称，切换侧边栏的禁用状态
+        document.body.classList.toggle('in-reader', viewName === 'reader');
         if (viewName === 'reader') {
             elements.navigationSidebar.classList.add('disabled');
         } else {

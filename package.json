@@ -1,0 +1,22 @@
+{
+  "name": "yuki-s-library",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Yuki的图书馆 —— 浏览器里的 ePub 阅读器（纯前端，零依赖，可离线）",
+  "type": "module",
+  "scripts": {
+    "start": "node serve.mjs",
+    "dev": "node serve.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "epub",
+    "reader",
+    "bookshelf",
+    "indexeddb",
+    "pwa"
+  ],
+  "license": "MIT"
+}

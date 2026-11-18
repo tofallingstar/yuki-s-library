@@ -8,7 +8,7 @@
     <link rel="icon" href="data:,">
     
     <meta http-equiv="Content-Security-Policy" content="
-    script-src 'self' 'unsafe-inline' blob: https://cdn.jsdelivr.net;
+    script-src 'self' 'unsafe-inline' blob:;
     style-src 'self' 'unsafe-inline' blob: https://fonts.googleapis.com;
     font-src 'self' blob: data: *; 
     img-src 'self' data: blob: *;
@@ -19,13 +19,21 @@
     ">
 
     <link rel="stylesheet" href="style.css">
-    <script src="jszip.min.js"></script> 
-    <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
+    <!-- epub.js 内置在本地：断网也能读书，不再依赖 jsdelivr -->
+    <script src="jszip.min.js"></script>
+    <script src="vendor/epub.min.js"></script>
+    <script>
+      // 首帧前同步恢复主题，避免刷新时先白后黑的闪烁
+      try {
+        if (localStorage.getItem('yuki:theme') === 'dark') document.documentElement.classList.add('preload-dark');
+      } catch (e) {}
+    </script>
 </head>
 
 <body>
     <div class="app-container">
-        <nav class="navigation-sidebar">
+        <button id="sidebar-toggle" class="sidebar-toggle" aria-label="打开/收起菜单" aria-expanded="false">☰</button>
+        <nav class="navigation-sidebar" id="navigation-sidebar">
             <header>
                 <h1>yuki的图书馆</h1>
             </header>
@@ -41,6 +49,7 @@
             <footer class="sidebar-footer">
             </footer>
         </nav>
+        <div id="sidebar-scrim" class="sidebar-scrim hidden"></div>
         
         <main class="main-content">
             <div class="view-container">
@@ -57,25 +66,6 @@
                 
                 <div id="reader-view" class="view hidden">
                     <div id="custom-background" class="custom-background"></div>
-
-                    <div id="toc-panel" class="toc-panel">
-                        <div class="toc-header">
-                            <h3>目录</h3>
-                            <button id="toc-close-btn" class="panel-close-btn">×</button>
-                        </div>
-                        <div class="toc-search-wrapper">
-                            <input type="text" id="toc-search-input" placeholder="筛选章节或按Enter搜索内容...">
-                        </div>
-                        <div id="toc-list" class="toc-list"></div>
-                        <!-- 【新增】这是新的内容搜索结果容器 -->
-                        <div id="toc-search-results-container" class="hidden">
-                            <div class="toc-search-header">
-                                <button id="toc-back-to-nav-btn" class="toolbar-btn">← 返回目录</button>
-                            </div>
-                            <div id="toc-searching-indicator" class="hidden">正在搜索全书...</div>
-                            <ul id="toc-search-results-list"></ul>
-                        </div>
-                    </div>
 
                     <div class="reader-toolbar">
                         <div class="toolbar-group">
@@ -109,16 +99,36 @@
                             </div>
                         </div>
                         <div class="font-controls">
-                            <span>字体大小:</span>
-                            <button id="font-size-decrease">-</button>
-                            <button id="font-size-increase">+</button>
+                            <span>字体大小 <b id="font-size-value">16px</b></span>
+                            <button id="font-size-decrease" aria-label="减小字号">-</button>
+                            <button id="font-size-increase" aria-label="增大字号">+</button>
                         </div>
                     </div>
                     
                     <div class="reader-area">
                         <div id="viewer"></div>
-                        <button id="prev" class="arrow"><</button>
-                        <button id="next" class="arrow">></button>
+                        <button id="prev" class="arrow" aria-label="上一页">&lt;</button>
+                        <button id="next" class="arrow" aria-label="下一页">&gt;</button>
+
+                        <!-- 目录面板挂在阅读区内部：只覆盖正文区域，不再压住顶部工具栏 -->
+                        <aside id="toc-panel" class="toc-panel" aria-label="目录">
+                            <div class="toc-header">
+                                <h3>目录</h3>
+                                <button id="toc-close-btn" class="panel-close-btn" aria-label="关闭目录">×</button>
+                            </div>
+                            <div class="toc-search-wrapper">
+                                <input type="text" id="toc-search-input" placeholder="筛选章节，回车搜索全书...">
+                            </div>
+                            <div id="toc-list" class="toc-list"></div>
+                            <div id="toc-search-results-container" class="hidden">
+                                <div class="toc-search-header">
+                                    <button id="toc-back-to-nav-btn" class="toolbar-btn">← 返回目录</button>
+                                    <span id="toc-search-summary" class="toc-search-summary"></span>
+                                </div>
+                                <div id="toc-searching-indicator" class="hidden">正在搜索全书...</div>
+                                <ul id="toc-search-results-list"></ul>
+                            </div>
+                        </aside>
                         
                         <div id="info-panel" class="info-panel yuki-panel">
                             <div id="info-chapter" class="info-item">
@@ -170,7 +180,7 @@
         <div id="word-frequency-content" class="panel-content"></div>
     </div>
     
-    <input type="file" id="book-upload" accept=".epub,.pdf" hidden multiple>
+    <input type="file" id="book-upload" accept=".epub,application/epub+zip" hidden multiple>
     <div id="loading-indicator" class="hidden">正在加载书籍...</div>
     
     <div id="music-player" class="music-player hidden">
@@ -202,6 +212,9 @@
     </div>
     
     <button id="john-smith-trigger" title="Change the world line">☆</button>
+
+    <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+
     <script type="module" src="js/main.js"></script>
 </body>
 </html>

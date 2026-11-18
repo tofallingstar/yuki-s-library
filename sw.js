@@ -42,19 +42,19 @@ self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
     const path = url.pathname;
 
-    const CORE_FILES = [
-        '/js/',
-        '/style.css',
-        '/main.js',
-        '/index.html',
-        '/favicon.ico',
-        '/jszip.min.js', // <-- 放行 jszip
-        '/lunr.min.js',  // <-- 放行 lunr
-        '/fonts/'        // <-- 放行所有字体文件
+    // 应用自身的静态资源放行（用后缀匹配，部署在 GitHub Pages 的子路径下也能正确放行）
+    const CORE_PATTERNS = [
+        /\/js\//,
+        /\/vendor\//,
+        /\/style\.css$/,
+        /\/index\.html$/,
+        /\/jszip\.min\.js$/,
+        /\/sw\.js$/,
+        /\/manifest\.json$/,
+        /\/favicon\.ico$/,
     ];
 
-    // 如果请求的路径以任何一个核心文件/文件夹开头，就直接返回，不拦截
-    if (CORE_FILES.some(corePath => path.startsWith(corePath)) || path === '/') {
+    if (path.endsWith('/') || path === '/' || CORE_PATTERNS.some(pattern => pattern.test(path))) {
         return;
     }
 

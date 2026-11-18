@@ -31,6 +31,8 @@ export const elements = {
     searchBar: document.getElementById('search-bar'),
     clearAllBooksBtn: document.getElementById('clear-all-books-btn'),
     navigationSidebar: document.querySelector('.navigation-sidebar'),
+    sidebarToggle: document.getElementById('sidebar-toggle'),
+    sidebarScrim: document.getElementById('sidebar-scrim'),
     closeMusicBtn: document.querySelector('#music-player .close-btn'),
     customBackground: document.getElementById('custom-background'),
     bgUploadInput: document.getElementById('bg-upload-input'), 

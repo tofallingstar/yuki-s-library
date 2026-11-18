@@ -1,41 +1,22 @@
-/* --- 常规体 (Regular) --- */
+/* Courier Prime（SIL Open Font License 1.1，来自 Google Fonts / @fontsource）
+   旧版引用的 .ttf 从未提交进仓库，彩蛋模式一直 404；这里换成随仓库分发的 woff2。 */
 @font-face {
-    font-display: swap; 
-    font-family: 'Courier Prime';
-    font-style: normal;
-    font-weight: 400; /* 400 代表 normal */
-    src: url('fonts/CourierPrime-Regular.ttf') format('truetype');
-  }
-  
-  /* --- 斜体 (Italic) --- */
-  @font-face {
-    font-display: swap;
-    font-family: 'Courier Prime';
-    font-style: italic;
-    font-weight: 400;
-    src: url('fonts/CourierPrime-Italic.ttf') format('truetype');
-  }
-  
-  /* --- 粗体 (Bold) --- */
-  @font-face {
-    font-display: swap;
-    font-family: 'Courier Prime';
-    font-style: normal;
-    font-weight: 700; /* 700 代表 bold */
-    src: url('fonts/CourierPrime-Bold.ttf') format('truetype');
-  }
-  
-  /* --- 粗斜体 (Bold Italic) --- */
-  @font-face {
-    font-display: swap;
-    font-family: 'Courier Prime';
-    font-style: italic;
-    font-weight: 700;
-    src: url('fonts/CourierPrime-BoldItalic.ttf') format('truetype');
-  }
-  
-  
-  /*
+  font-display: swap;
+  font-family: 'Courier Prime';
+  font-style: normal;
+  font-weight: 400;
+  src: url('fonts/CourierPrime-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Courier Prime';
+  font-style: normal;
+  font-weight: 700;
+  src: url('fonts/CourierPrime-Bold.woff2') format('woff2');
+}
+
+/*
    * Yuki的图书馆 - 主样式表 (v11 - 最终答辩版)
    */
   
@@ -117,6 +98,23 @@
   .book-item .book-action-btn:hover { background: rgba(255, 255, 255, 0.2); }
   .list-selection-menu { position: absolute; z-index: 1002; list-style: none; padding: 5px; min-width: 120px; max-height: 150px; overflow-y: auto; }
   .book-item .book-title { margin-top: 10px; padding: 0 5px; font-size: 14px; font-weight: 500; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .book-item .book-progress {
+      height: 4px;
+      margin: 8px 8px 4px;
+      border-radius: 999px;
+      background-color: rgba(106, 130, 251, 0.16);
+      overflow: hidden;
+  }
+  .book-item .book-progress-bar {
+      height: 100%;
+      width: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #6a82fb, #9aa8ff);
+      transition: width 0.35s ease;
+  }
+  .book-item .book-meta { font-size: 12px; opacity: 0.6; margin-bottom: 4px; }
+  body.dark-mode .book-item .book-progress { background-color: rgba(0, 255, 204, 0.15); }
+  body.dark-mode .book-item .book-progress-bar { background: linear-gradient(90deg, #00ffcc, #6affd8); box-shadow: 0 0 8px var(--yuki-glow-color); }
   .add-book-card { display: flex; justify-content: center; align-items: center; cursor: pointer; aspect-ratio: 2 / 3; border-radius: 8px; transition: all 0.2s ease-in-out; }
   .add-book-card .plus-sign { font-size: 60px; font-weight: 300; line-height: 1; transition: all 0.2s ease-in-out; }
   .add-book-card:hover .plus-sign { transform: rotate(90deg); }
@@ -135,7 +133,7 @@
      ========================================================================== */
   /* --- 日间模式 --- */
   .navigation-sidebar { background-color: var(--day-secondary-bg); border-right: 1px solid var(--day-border-color); }
-  .navigation-sidebar h1 { color: var(--accent-color); }
+  .navigation-sidebar h1 { color: var(--accent-color); font-size: 24px; line-height: 1.3; word-break: keep-all; }
   .nav-item > .nav-item-main:hover, .nav-item.musicbtn:hover, .sub-menu li:hover { color: var(--accent-color); background-color: rgba(106, 130, 251, 0.05); }
   .nav-item.active > .nav-item-main, .nav-item.musicbtn.active, .sub-menu li.active-list { background-color: transparent; color: var(--accent-color); font-weight: 600; }
   .create-list-item { color: var(--accent-color); font-weight: bold; }
@@ -150,7 +148,21 @@
   .reader-toolbar { background-color: var(--day-secondary-bg); border-bottom: 1px solid var(--day-border-color); }
   .toolbar-btn { background-color: var(--day-secondary-bg); border: 1px solid var(--day-border-color); color: var(--day-text-color); }
   .font-controls button { background-color: var(--day-secondary-bg); color: var(--day-text-color); border: 1px solid var(--day-border-color); }
-  body:not(.dark-mode) .info-panel { display: none; }
+  /* 浅色主题下也显示阅读信息面板（原来被整块隐藏，白天的读者看不到进度） */
+  body:not(.dark-mode) .info-panel {
+      display: block;
+      background-color: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--day-border-color);
+      border-radius: 10px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      color: var(--day-text-color);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      text-shadow: none;
+      opacity: 0.45;
+  }
+  body:not(.dark-mode) #reader-view:hover .info-panel { opacity: 1; }
+  body:not(.dark-mode) .info-panel .info-label { color: #8a8f99; }
+  body:not(.dark-mode) .info-panel .info-value { color: #2f3542; }
   .music-player { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
   body:not(.dark-mode) .music-player { background-color: var(--day-secondary-bg); border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); border: 1px solid var(--day-border-color); }
   body:not(.dark-mode) .music-header { background-color: var(--accent-color); color: white; }
@@ -162,7 +174,7 @@
   
   /* --- 夜间模式 --- */
   body.dark-mode .navigation-sidebar { background-color: var(--yuki-panel-bg); border-right-color: var(--yuki-border-color); backdrop-filter: blur(5px); }
-  body.dark-mode h1 { color: var(--yuki-text-color); }
+  body.dark-mode h1 { color: var(--yuki-text-color); font-size: 1.3em; line-height: 1.3; }
   body.dark-mode .nav-item > .nav-item-main:hover, body.dark-mode .nav-item.musicbtn:hover, body.dark-mode .sub-menu li:hover { background-color: rgba(0, 255, 204, 0.1); color: #fff; }
   body.dark-mode .nav-item.active > .nav-item-main, body.dark-mode .nav-item.musicbtn.active, body.dark-mode .sub-menu li.active-list { background-color: transparent; color: #fff; text-shadow: 0 0 8px #fff, 0 0 5px var(--yuki-glow-color); }
   body.dark-mode .delete-list-btn { color: var(--yuki-text-color); opacity: 0.5; }
@@ -237,7 +249,7 @@
   #music-playlist-modal.yuki-panel { border-color: var(--yuki-border-hover); }
   #music-playlist-modal.yuki-panel .playlist-header { background-color: rgba(0, 255, 204, 0.1); border-bottom: 1px solid var(--yuki-border-color); }
   #music-playlist-modal.yuki-panel #playlist-songs { padding: 10px; margin: 0; max-height: 300px; overflow-y: auto; }
-  .info-panel { position: absolute; top: 20px; right: 20px; z-index: 101; padding: 10px 15px; font-size: 13px; min-width: 250px; opacity: 0.2; transition: opacity 0.3s ease; }
+  .info-panel { position: absolute; bottom: 22px; right: 12px; z-index: 101; padding: 10px 14px; font-size: 13px; min-width: 200px; opacity: 0.35; transition: opacity 0.3s ease; }
   #reader-view:hover .info-panel { opacity: 1; }
   .info-item { display: flex; justify-content: space-between; padding: 2px 0; }
   .info-label { opacity: 0.7; margin-right: 10px; }
@@ -246,7 +258,7 @@
   #reader-view:hover .reader-footer-controls { opacity: 1; pointer-events: auto; }
   .background-controls { background-color: rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px); padding: 8px 15px; border-radius: 20px; display: flex; align-items: center; gap: 15px; color: white; font-size: 14px; }
   .custom-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; z-index: 0; transition: opacity 0.3s ease; }
-  .reader-toolbar, .reader-area, .reader-footer-controls, .info-panel { z-index: 1; }
+  .reader-toolbar, .reader-area, .reader-footer-controls { z-index: 1; }
   #loading-indicator { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); display: flex; justify-content: center; align-items: center; font-size: 1.5em; color: var(--accent-color); z-index: 9999; }
   body.dark-mode #loading-indicator { background: rgba(0, 0, 0, 0.8); font-family: sans-serif; }
   .theme-container, .theme-container * { transition: 0.7s; }
@@ -335,7 +347,7 @@
   .toc-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; flex-shrink: 0; }
   .toc-search-wrapper { padding: 0 15px 10px; flex-shrink: 0; }
   #toc-search-input { width: 100%; padding: 8px 10px; border-radius: 5px; border: 1px solid; outline: none; transition: all 0.2s ease; }
-  .toc-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex-grow: 1; }
+  .toc-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex-grow: 1; min-height: 0; }
   .toc-list ul { list-style: none; padding-left: 20px; }
   .toc-list li a { display: block; padding: 10px 15px; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-top: 1px solid; transition: all 0.2s ease; }
   .toc-panel { background-color: var(--day-secondary-bg); }
@@ -411,7 +423,9 @@
 #toc-search-results-container {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    /* 原来是 height:100%，加上标题栏和搜索框后会超出面板底部；改用 flex 分配剩余高度 */
+    flex: 1;
+    min-height: 0;
 }
 
 .toc-search-header {
@@ -442,7 +456,8 @@ body.dark-mode .toc-search-header {
     padding: 0;
     margin: 0;
     overflow-y: auto;
-    flex-grow: 1;
+    flex: 1;
+    min-height: 0;
 }
 
 .search-result-item {
@@ -473,3 +488,204 @@ body.dark-mode .search-result-item .search-highlight {
     background-color: #a88c00;
     color: #fff;
 }
+  /* ==========================================================================
+     12. 2026 完善版新增样式：Toast / 移动端抽屉 / 目录细节
+     ========================================================================== */
+  /* 首帧防闪烁：先画深色底，JS 恢复主题后再移除 */
+  html.preload-dark body { background-color: var(--yuki-bg); }
+
+  .toc-panel { border-radius: 0 12px 12px 0; }
+  .toc-empty { padding: 24px 16px; text-align: center; opacity: 0.6; font-size: 14px; }
+  .toc-search-summary { font-size: 12px; opacity: 0.65; margin-left: auto; }
+
+  /* --- Toast --- */
+  .toast-container {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+      max-width: min(92vw, 520px);
+  }
+  .toast {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.45;
+      color: var(--day-text-color);
+      background-color: rgba(255, 255, 255, 0.98);
+      border: 1px solid var(--day-border-color);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+      pointer-events: auto;
+      cursor: pointer;
+  }
+  .toast.toast-in { opacity: 1; transform: translateY(0); }
+  .toast.toast-out { opacity: 0; transform: translateY(-8px); }
+  .toast-error { border-color: #ffb4b4; }
+  .toast-warn { border-color: #ffd591; }
+  .toast-success { border-color: #b7ebc6; }
+  body.dark-mode .toast {
+      background-color: rgba(20, 24, 24, 0.96);
+      color: var(--yuki-text-color);
+      border-color: var(--yuki-border-color);
+      font-family: var(--font-mono);
+      box-shadow: 0 0 18px rgba(0, 255, 204, 0.15);
+  }
+
+  /* --- 移动端侧边栏抽屉 --- */
+  .sidebar-toggle {
+      display: none;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 1200;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid var(--day-border-color);
+      background-color: var(--day-secondary-bg);
+      color: var(--day-text-color);
+      font-size: 18px;
+      cursor: pointer;
+  }
+  .sidebar-scrim {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+      z-index: 1000;
+  }
+
+  @media (max-width: 900px) {
+      .sidebar-toggle { display: block; }
+      .navigation-sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          width: 260px;
+          transform: translateX(-100%);
+          transition: transform 0.25s ease;
+          box-shadow: 4px 0 20px rgba(0, 0, 0, 0.18);
+      }
+      body.sidebar-open .navigation-sidebar { transform: translateX(0); }
+      .view { padding: 16px; padding-top: 58px; }
+      #reader-view { padding-top: 0; }
+      .bookshelf { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 14px; }
+      .reader-toolbar { padding: 8px 10px; flex-wrap: wrap; gap: 8px; }
+      .toolbar-group { flex-wrap: wrap; gap: 6px; }
+      .toolbar-btn { padding: 6px 10px; font-size: 13px; }
+      #viewer { width: 100%; max-width: 100%; height: 82%; }
+      .arrow { width: 38px; height: 38px; font-size: 18px; }
+      #prev { left: 8px; }
+      #next { right: 8px; }
+      .info-panel { top: auto; bottom: 8px; right: 8px; min-width: 0; padding: 6px 10px; font-size: 11px; }
+      .info-value { max-width: 90px; }
+      .reader-footer-controls { bottom: 8px; left: 8px; }
+      .background-controls { font-size: 12px; padding: 6px 10px; gap: 8px; }
+      .toc-panel { width: 82%; max-width: 82%; }
+      .theme-container { transform: scale(0.32); }
+  }
+
+  @media (max-width: 520px) {
+      .theme-container { transform: scale(0.26); }
+      .font-controls span { display: none; }
+      #coke-btn { display: none; }
+  }
+
+  /* --- 应用内输入弹窗（替代原生 prompt） --- */
+  .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(2px);
+  }
+  .modal-card {
+      width: min(92vw, 360px);
+      padding: 20px;
+      border-radius: 14px;
+      background-color: var(--day-secondary-bg);
+      border: 1px solid var(--day-border-color);
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.22);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+  }
+  .modal-title { font-size: 16px; font-weight: 600; color: var(--day-text-color); }
+  .modal-input {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid var(--day-border-color);
+      background-color: var(--day-primary-bg);
+      color: var(--day-text-color);
+      outline: none;
+  }
+  .modal-input:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(106, 130, 251, 0.2); }
+  .modal-input-invalid { border-color: #ff7878; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+  .modal-btn { padding: 8px 16px; border-radius: 8px; font-size: 14px; cursor: pointer; border: 1px solid var(--day-border-color); background-color: var(--day-secondary-bg); color: var(--day-text-color); }
+  .modal-confirm { background-color: var(--accent-color); border-color: var(--accent-color); color: #fff; }
+  body.dark-mode .modal-card { background-color: rgba(20, 24, 24, 0.98); border-color: var(--yuki-border-color); color: var(--yuki-text-color); font-family: var(--font-mono); }
+  body.dark-mode .modal-title { color: var(--yuki-text-color); }
+  body.dark-mode .modal-input { background-color: rgba(0, 0, 0, 0.4); border-color: var(--yuki-border-color); color: var(--yuki-text-color); }
+  body.dark-mode .modal-btn { background-color: transparent; border-color: var(--yuki-border-color); color: var(--yuki-text-color); }
+  body.dark-mode .modal-confirm { background-color: rgba(0, 255, 204, 0.15); border-color: var(--yuki-border-hover); color: #fff; }
+
+  .modal-message { font-size: 14px; line-height: 1.6; opacity: 0.75; }
+  .modal-danger { background-color: #ff5c5c; border-color: #ff5c5c; }
+  body.dark-mode .modal-danger { background-color: rgba(255, 92, 92, 0.2); border-color: #ff5c5c; color: #ffdada; }
+
+  @media (max-width: 900px) {
+      /* 手机上没有空间放 SYSTEM.LOG 调试面板，直接隐藏（它只是夜间主题的装饰） */
+      #log-console { display: none !important; }
+      .book-item .book-meta { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  }
+
+  /* --- 修复：flex 子项默认 min-width:auto，会让 epub.js 的超宽 iframe 把整页撑到几万像素 --- */
+  .main-content, .view-container, #reader-view, .reader-area, #viewer { min-width: 0; }
+  .main-content { overflow: hidden; }
+
+  /* 阅读时隐藏移动端菜单按钮：阅读器里侧边栏本来就是禁用的，按钮只会挡住工具栏 */
+  body.in-reader .sidebar-toggle { display: none; }
+  @media (max-width: 900px) {
+      .reader-toolbar { overflow-x: auto; flex-wrap: nowrap; }
+      .reader-toolbar::-webkit-scrollbar { height: 0; }
+  }
+
+  .bookshelf-empty {
+      grid-column: 1 / -1;
+      padding: 18px 4px;
+      font-size: 14px;
+      line-height: 1.7;
+      opacity: 0.65;
+  }
+  body.dark-mode .bookshelf-empty { color: var(--yuki-text-color); }
+
+  /* 阅读视图是固定布局：内部不许整页滚动，否则 epub.js 预渲染到可视区外的 view 会让右侧出现滚动条 */
+  #reader-view { overflow: hidden; }
+
+  @media (max-width: 900px) {
+      /* 抽屉打开时标题会被左上角的菜单按钮压住，给 header 让出位置 */
+      .navigation-sidebar header { padding-left: 44px; }
+  }
+
+  @media (max-width: 900px) {
+      /* 抽屉是浮层，半透明会让后面的书封透出来，窄屏改用不透明背景 */
+      .navigation-sidebar { background-color: var(--day-secondary-bg); }
+      body.dark-mode .navigation-sidebar { background-color: #101414; }
+  }

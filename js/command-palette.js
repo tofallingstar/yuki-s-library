@@ -21,7 +21,10 @@ class CommandPalette {
     }
 
     register(command) {
-        this._commands.push(command);
+        // 同 id 视为更新，避免重复注册（例如导入新书后刷新命令列表）
+        const existingIndex = this._commands.findIndex(cmd => cmd.id === command.id);
+        if (existingIndex >= 0) this._commands[existingIndex] = command;
+        else this._commands.push(command);
     }
 
     toggle() {
