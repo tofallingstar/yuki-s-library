@@ -46,6 +46,8 @@ self.addEventListener('fetch', (event) => {
     const CORE_PATTERNS = [
         /\/js\//,
         /\/vendor\//,
+        /\/fonts\//,
+        /\/docs\//,
         /\/style\.css$/,
         /\/index\.html$/,
         /\/jszip\.min\.js$/,

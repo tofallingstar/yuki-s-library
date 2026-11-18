@@ -71,7 +71,16 @@ function applyTheme(themeName, { persist = true } = {}) {
     setReaderTheme(isDark ? 'dark' : (document.body.classList.contains('john-smith-mode') ? 'john-smith' : 'light'));
     applyMusicPlayerTheme();
     logConsole.element?.classList.toggle('hidden', !isDark);
-    elements.themeToggleBtn?.setAttribute('aria-pressed', String(isDark));
+
+    // 模式开关与身份文案：白天=文学部，夜间=资讯统合思念体终端
+    document.querySelectorAll('.mode-switch').forEach((btn) => {
+        btn.setAttribute('aria-pressed', String(isDark));
+        const text = btn.querySelector('.mode-text');
+        if (text) text.textContent = isDark ? '统合' : '文学部';
+    });
+    const brandSub = document.querySelector('.brand-sub');
+    if (brandSub) brandSub.textContent = isDark ? '资讯统合思念体 · 终端 No.7' : '文学部 · 图书委员';
+
     if (isDark) logConsole.log('Theme protocol switched to: DARK', 'system');
 }
 
@@ -224,7 +233,7 @@ function bindSimpleEventListeners() {
     elements.clearAllBooksBtn.addEventListener('click', handleClearAllBooks);
     elements.fontSizeIncrease.addEventListener('click', increaseFontSize);
     elements.fontSizeDecrease.addEventListener('click', decreaseFontSize);
-    elements.themeToggleBtn.addEventListener('click', toggleTheme);
+    document.querySelectorAll('.mode-switch').forEach(btn => btn.addEventListener('click', toggleTheme));
     elements.bgUploadInput.addEventListener('change', handleBgUpload);
     elements.bgOpacitySlider.addEventListener('input', handleBgOpacityChange);
     elements.analyzeTextBtn.addEventListener('click', showWordFrequencyPanel);

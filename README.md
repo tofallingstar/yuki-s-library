@@ -4,11 +4,21 @@
 纯 HTML + CSS + 原生 JavaScript，**没有构建步骤、没有后端、没有 npm 依赖**，书和进度都存在本机
 IndexedDB 里，断网也能读。
 
-最初是 2025 年的期末答辩项目，2026 年做了一轮完整重构与修补（见下方「v2 更新」）。
+最初是 2025 年的期末答辩项目，2026 年做了一轮完整重构与修补（见下方「v2 更新」），
+又把视觉按「长门有希」重做了一遍（见「v3 视觉」）。
 
-| 书架 | 白天阅读 | 夜间阅读 |
-| --- | --- | --- |
-| ![书架](docs/screenshots/bookshelf.png) | ![白天](docs/screenshots/reader-light.png) | ![夜间](docs/screenshots/reader-dark.png) |
+## 两副面孔
+
+同一个书架，两种形态，用开关切换（会记住）：
+
+- **文学部 · 浅色**：纸色底、衬线正文、2em 首行缩进、紫藤色点缀——像社团教室窗边的读书角。
+- **统合思念体 · 夜间**：近黑底、荧光绿、界面用等宽字体、扫描线、右下角 HUD——长门有希的终端形态。
+  正文仍然是衬线，荧光绿只给界面，不拿长文阅读体验换气氛。
+
+| 文学部 | 统合思念体 |
+| --- | --- |
+| ![书架·浅色](docs/screenshots/bookshelf.png) | ![书架·夜间](docs/screenshots/bookshelf-dark.png) |
+| ![阅读·浅色](docs/screenshots/reader-light.png) | ![阅读·夜间](docs/screenshots/reader-dark.png) |
 
 ![手机上的阅读界面](docs/screenshots/mobile-reader.png)
 
@@ -99,6 +109,21 @@ serve.mjs           零依赖本地静态服务器
 - `npm start` 一条命令起服务；GitHub Pages 自动部署 workflow；README 重写。
 - 目录面板内的搜索结果计数、空目录提示。
 
+## v3 视觉（2026）
+
+把原来「蓝色后台 + 外来日夜组件」的混搭，收成一套围绕角色的设计语言：
+
+- 设计变量重写：纸色/墨色/紫藤（浅色）与近黑/荧光绿（夜间），间距、圆角、阴影统一。
+- 书架：封面加书脊阴影、悬停抬起；标题省列号；导入卡写明「导入 ePub」；进度条与「已读 23% · 继续阅读」。
+- 阅读页：正文衬线 + 2em 首行缩进 + 1.9 行距，页边留白 30/34；只作用于真正的正文段落（`p` 文本 ≥ 20 字），
+  书籍自带的章节号、图注等装饰不被覆盖。
+- 顶部阅读进度条；信息条白天是页脚一行，夜间是右下角 HUD。
+- 换掉外来的「云朵日夜」开关，改成两态模式开关（阅读工具栏 + 侧边栏底部各一个），标签随模式变「文学部 / 统合」，
+  侧边栏身份文案也从「文学部 · 图书委员」切换成「资讯统合思念体 · 终端 No.7」。
+- 目录：章节序号、当前章高亮、窄屏覆盖正文但不压工具栏。
+- 弹窗 / Toast / 命令面板 / 音乐面板全部按两套主题重绘。
+- 系统日志面板默认收起隐藏（想调试可以在 `style.css` 里删掉 `#log-console { display:none }`）。
+
 ## 部署到线上
 
 仓库自带 `.github/workflows/pages.yml`：推到 `main` 后，到仓库 **Settings → Pages → Build and deployment**
@@ -109,8 +134,8 @@ serve.mjs           零依赖本地静态服务器
 ## 致谢
 
 - 参考设计：[pacexy/flow](https://github.com/pacexy/flow)（开源 ePub 阅读器）
-- 日夜切换按钮：[Xiumuzaidiao/Day-night-toggle-button](https://github.com/Xiumuzaidiao/Day-night-toggle-button)
 - ePub 解析：[epub.js](https://github.com/futurepress/epub.js)
+- Courier Prime 字体：SIL Open Font License 1.1（Google Fonts / @fontsource）
 
 ## License
 

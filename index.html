@@ -34,8 +34,10 @@
     <div class="app-container">
         <button id="sidebar-toggle" class="sidebar-toggle" aria-label="打开/收起菜单" aria-expanded="false">☰</button>
         <nav class="navigation-sidebar" id="navigation-sidebar">
-            <header>
-                <h1>yuki的图书馆</h1>
+            <header class="brand">
+                <div class="brand-id">YUKI.N</div>
+                <h1>长门有希的图书馆</h1>
+                <div class="brand-sub">文学部 · 图书委员</div>
             </header>
             <ul class="nav-menu">
                 <li id="nav-bookshelf" class="nav-item">
@@ -47,6 +49,12 @@
                 <li id="nav-music" class="nav-item musicbtn">音乐</li>
             </ul>
             <footer class="sidebar-footer">
+                <button class="mode-switch" id="theme-toggle-sidebar" title="切换 文学部 / 统合思念体" aria-pressed="false">
+                    <span class="mode-track"><span class="mode-knob"></span></span>
+                    <span class="mode-text">文学部</span>
+                </button>
+                <div class="footer-terminal">SYS.STATUS / ONLINE</div>
+                <div class="footer-line">安静地读完一本书。</div>
             </footer>
         </nav>
         <div id="sidebar-scrim" class="sidebar-scrim hidden"></div>
@@ -69,43 +77,26 @@
 
                     <div class="reader-toolbar">
                         <div class="toolbar-group">
-                            <button id="toc-open-btn" class="toolbar-btn">☰ 目录</button>
-                            <button id="back-to-shelf-btn" class="toolbar-btn">返回书架</button>
-                            <button id="analyze-text-btn" class="toolbar-btn">📊 词频分析</button>
-                            <button id="coke-btn" class="toolbar-btn">🥤 来瓶可乐</button>
+                            <button id="toc-open-btn" class="toolbar-btn">目录</button>
+                            <button id="back-to-shelf-btn" class="toolbar-btn">书架</button>
+                            <button id="analyze-text-btn" class="toolbar-btn">词频</button>
+                            <button id="coke-btn" class="toolbar-btn toolbar-egg" title="他非要加的">🥤</button>
                         </div>
-                        <div id="theme-toggle-btn" class="theme-container" title="切换主题">
-                            <div class="components">
-                                <div class="main-button">
-                                    <div class="moon"></div><div class="moon"></div><div class="moon"></div>
-                                </div>
-                                <div class="daytime-backgrond"></div><div class="daytime-backgrond"></div><div class="daytime-backgrond"></div>
-                                <div class="cloud">
-                                    <div class="cloud-son"></div><div class="cloud-son"></div><div class="cloud-son"></div>
-                                    <div class="cloud-son"></div><div class="cloud-son"></div><div class="cloud-son"></div>
-                                </div>
-                                <div class="cloud-light">
-                                    <div class="cloud-son"></div><div class="cloud-son"></div><div class="cloud-son"></div>
-                                    <div class="cloud-son"></div><div class="cloud-son"></div><div class="cloud-son"></div>
-                                </div>
-                                <div class="stars">
-                                    <div class="star big"><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div></div>
-                                    <div class="star big"><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div></div>
-                                    <div class="star medium"><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div></div>
-                                    <div class="star medium"><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div></div>
-                                    <div class="star small"><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div></div>
-                                    <div class="star small"><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div><div class="star-son"></div></div>
-                                </div>
+                        <div class="toolbar-right">
+                            <button id="theme-toggle-btn" class="mode-switch" title="切换 文学部 / 统合思念体" aria-pressed="false">
+                                <span class="mode-track"><span class="mode-knob"></span></span>
+                                <span class="mode-text">文学部</span>
+                            </button>
+                            <div class="font-controls">
+                                <span class="font-label">字号 <b id="font-size-value">16px</b></span>
+                                <button id="font-size-decrease" aria-label="减小字号">-</button>
+                                <button id="font-size-increase" aria-label="增大字号">+</button>
                             </div>
-                        </div>
-                        <div class="font-controls">
-                            <span>字体大小 <b id="font-size-value">16px</b></span>
-                            <button id="font-size-decrease" aria-label="减小字号">-</button>
-                            <button id="font-size-increase" aria-label="增大字号">+</button>
                         </div>
                     </div>
                     
                     <div class="reader-area">
+                        <div id="read-progress" class="read-progress"><span></span></div>
                         <div id="viewer"></div>
                         <button id="prev" class="arrow" aria-label="上一页">&lt;</button>
                         <button id="next" class="arrow" aria-label="下一页">&gt;</button>
@@ -130,25 +121,25 @@
                             </div>
                         </aside>
                         
-                        <div id="info-panel" class="info-panel yuki-panel">
+                        <div id="info-panel" class="info-panel">
                             <div id="info-chapter" class="info-item">
-                                <span class="info-label">CHAPTER:</span>
+                                <span class="info-label">章节</span>
                                 <span class="info-value">--</span>
                             </div>
                             <div id="info-chapter-progress" class="info-item">
-                                <span class="info-label">IN-CHAPTER:</span>
+                                <span class="info-label">章内</span>
                                 <span class="info-value">--%</span>
                             </div>
                             <div id="info-progress" class="info-item">
-                                <span class="info-label">IN-BOOK:</span>
+                                <span class="info-label">全书</span>
                                 <span class="info-value">--%</span>
                             </div>
                             <div id="info-pagination" class="info-item">
-                                <span class="info-label">PAGINATION:</span>
+                                <span class="info-label">页码</span>
                                 <span class="info-value">-- / --</span>
                             </div>
                             <div id="info-time-left" class="info-item">
-                                <span class="info-label">TIME-LEFT:</span>
+                                <span class="info-label">剩余</span>
                                 <span class="info-value">-- min</span>
                             </div>
                         </div>

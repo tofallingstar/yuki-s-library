@@ -101,7 +101,7 @@ async function showListSelectionMenu(buttonElement, bookId) {
         db.transaction(LIST_STORE_NAME, 'readonly').objectStore(LIST_STORE_NAME).getAll().onsuccess = e => resolve(e.target.result || []);
     });
     if (lists.length === 0) {
-        alert("还没有创建任何列表！");
+        toast('还没有创建任何列表，先在左侧新建一个', 'warn');
         return;
     }
     const menu = document.createElement('ul');

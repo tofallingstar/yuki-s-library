@@ -241,6 +241,13 @@ async function searchBookContent(query) {
 /* ------------------------------------------------------------------ *
  * 阅读信息面板
  * ------------------------------------------------------------------ */
+function updateReadProgressBar(percent) {
+    const bar = document.querySelector('#read-progress span');
+    if (!bar) return;
+    const value = Math.min(100, Math.max(0, (percent || 0) * 100));
+    bar.style.width = `${value.toFixed(2)}%`;
+}
+
 function setInfoValue(el, text) {
     const value = el?.querySelector('.info-value');
     if (value) value.textContent = text;
@@ -264,6 +271,7 @@ function updateInfoPanel(location) {
 
     setInfoValue(elements.infoPagination, `${currentPage} / ${totalPages}`);
     setInfoValue(elements.infoProgress, `${Math.round(bookProgress * 100)}%`);
+    updateReadProgressBar(bookProgress);
 
     const chapter = rendition.book.navigation.get(location.start.href);
     const chapterLabel = chapter?.label?.trim() || spineLabels.get(spineIndex) || `第 ${spineIndex + 1} 节`;
@@ -300,11 +308,23 @@ function injectReaderStyles(view) {
     style.id = 'yuki-reader-styles';
     style.innerHTML = `
         img, svg, image { max-width: 100% !important; max-height: 86vh !important; height: auto !important; object-fit: contain; display: block; margin: 1.2em auto !important; }
-        /* 正文两侧留白：原版文字紧贴页面边缘，长行读起来很挤 */
-        body { padding: 0 26px !important; box-sizing: border-box; }
-        p { line-height: 1.75; }
+        /* 正文排成书页：只给 body 设定衬线，书籍自带字体的标题保持原样 */
+        body { padding: 30px 34px !important; box-sizing: border-box; font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", serif !important; }
+        /* 书籍自带的标题框常常写死宽度，窄屏会被裁掉；给块级元素一个上限 */
+        div, p { max-width: 100% !important; }
+        /* 只调整“真正的正文段落”（见 tuneParagraphs），标题、装饰短行不动 */
+        .yuki-body-p { line-height: 1.9 !important; margin-bottom: 0.7em !important; text-indent: 2em !important; }
     `;
     doc.head.appendChild(style);
+}
+
+/** 给正文段落打标记：短行（章节号、图注）不参与排版覆盖，避免撑坏书籍自带的标题装饰 */
+function tuneParagraphs(doc) {
+    if (!doc) return;
+    doc.querySelectorAll('p').forEach(p => {
+        const text = (p.textContent || '').trim();
+        if (text.length >= 20) p.classList.add('yuki-body-p');
+    });
 }
 
 function forceApplyStyles(view) {
@@ -323,18 +343,20 @@ function forceApplyStyles(view) {
     const palette = isJohnSmith
         ? { color: '#e6e6fa', font: "'Courier Prime', 'Courier New', monospace", glow: 'rgba(200, 162, 200, 0.3)' }
         : {
-            color: '#d9fff6',
-            // 深色主题只换颜色，不要给正文套等宽字体：中文在等宽字体下会被拉开字距，很难读
-            font: "'PingFang SC', 'Microsoft YaHei', 'Noto Serif SC', serif",
-            glow: 'rgba(0, 255, 204, 0.12)',
+            color: '#e3f4ec',
+            // 正文保持衬线：荧光绿只用于界面，长文阅读不能被等宽字体拉散字距
+            font: "'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif",
+            glow: 'rgba(94, 242, 192, 0.08)',
         };
 
     doc.body.querySelectorAll('*').forEach(el => {
         el.style.setProperty('color', palette.color, 'important');
-        el.style.setProperty('font-family', palette.font, 'important');
         el.style.setProperty('background-color', 'transparent', 'important');
         el.style.setProperty('background', 'transparent', 'important');
         el.style.setProperty('text-shadow', `0 0 5px ${palette.glow}`, 'important');
+    });
+    ['body'].forEach(selector => {
+        doc.querySelectorAll(selector).forEach(el => el.style.setProperty('font-family', palette.font, 'important'));
     });
 }
 
@@ -406,7 +428,7 @@ export async function showWordFrequencyPanel() {
     }
 
     const isDarkMode = document.body.classList.contains('dark-mode');
-    analysisPanel.panel.className = isDarkMode ? 'yuki-panel' : 'day-panel';
+    analysisPanel.panel.className = 'yuki-panel'; // 两套主题都走 yuki-panel，颜色由 CSS 变量决定
     analysisPanel.panel.id = 'word-frequency-panel';
     analysisPanel.content.innerHTML = '';
     analysisPanel.panel.classList.remove('hidden');
@@ -591,6 +613,7 @@ export async function openEpub(bookId) {
             });
             rendition.on('rendered', (section, view) => {
                 injectReaderStyles(view);
+                tuneParagraphs(view.document);
                 setTimeout(() => forceApplyStyles(view), 10);
             });
 
@@ -619,10 +642,22 @@ export async function openEpub(bookId) {
     };
 }
 
+function applyThemeToRenderedViews() {
+    // 不依赖 epub.js 内部 manager 结构，直接遍历页面上已渲染的 iframe
+    document.querySelectorAll('#viewer iframe').forEach((iframe) => {
+        try {
+            forceApplyStyles({ document: iframe.contentDocument });
+        } catch (error) {
+            /* 跨域或尚未就绪时忽略 */
+        }
+    });
+}
+
 export function setReaderTheme(themeName) {
     if (!rendition) return;
     updateRenditionThemes();
-    rendition.manager?.views?.forEach(view => setTimeout(() => forceApplyStyles(view), 10));
+    setTimeout(applyThemeToRenderedViews, 30);
+    setTimeout(applyThemeToRenderedViews, 220);
 }
 
 export function destroyRendition() {

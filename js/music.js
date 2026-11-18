@@ -2,23 +2,22 @@
 
 import { elements } from './dom.js';
 import { getDB, MUSIC_STORE_NAME } from './db.js';
+import { confirmDialog } from './ui.js';
 
 let playlist = [];
 let currentSongIndex = -1;
 let isPlaying = false;
 
 export function applyMusicPlayerTheme() {
-    const isDarkMode = document.body.classList.contains('dark-mode');
-    elements.musicPlayer.classList.toggle('yuki-panel', isDarkMode);
+    // 两套主题都用 yuki-panel：颜色交给 CSS 变量，避免浅色下没有背景
+    elements.musicPlayer.classList.add('yuki-panel');
 }
 
 export function showPlaylistModal() {
     document.querySelector('#music-playlist-modal')?.remove();
     const modal = document.createElement('div');
     modal.id = 'music-playlist-modal';
-    if (document.body.classList.contains('dark-mode')) {
-        modal.classList.add('yuki-panel');
-    }
+    modal.classList.add('yuki-panel');
     modal.innerHTML = `
         <div class="playlist-header">
             <span>播放列表</span>
@@ -64,7 +63,13 @@ export function showPlaylistModal() {
 }
 
 async function deleteSong(songId, songTitle) {
-    if (!confirm(`确定要从播放列表中删除《${songTitle}》吗？`)) return;
+    const ok = await confirmDialog({
+        title: '移出播放列表',
+        message: `确定要从播放列表删除《${songTitle}》吗？只移除这条记录，不会动本地文件。`,
+        confirmText: '删除',
+        danger: true,
+    });
+    if (!ok) return;
     document.dispatchEvent(new CustomEvent('log-event', {
         detail: { message: `Deleting song: ${songTitle}`, type: 'action' }
     }));
